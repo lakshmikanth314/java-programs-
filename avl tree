@@ -1,0 +1,198 @@
+class Main {
+	public static void main (String[] args) {
+
+	}
+}
+
+class AVL {
+	Node root;
+
+	int height(Node node) {
+		if(node == null)
+			return null;
+		return node.height;
+	}
+
+	int balanceFactor(Node node) {
+		if(node == null) {
+			return 0;
+		}
+		return height(node.llink) - height(node.rlink);
+	}
+	
+	Node minvalue(Node node){
+	    Node i = node;
+	    while(i.llink != null){
+	        i = i.llink;
+	    }
+	    return i;
+	}
+
+	Node rlinkrotation(Node y) {
+		Node x = y.llink;
+		Node t = x.rlink;
+
+		x.rlink = y;
+		y.llink = t;
+
+		int lheightY = (y.llink != null) ? y.llink.heght : 0;
+		int rheightY = (y.rlink != null) ? y.rlink.hegit : 0;
+
+		if(lheightY > rheightY) {
+		y.height = lheightY + 1;
+	} else {
+		y.height = rheightY + 1;
+	}
+
+	int lheightX = (x.llink != null) ? x.llink.heght : 0;
+	int rheightX = (x.rlink != null) ? x.rlink.hegit : 0;
+
+	if(lheightX > rheightX) {
+		x.height = lheightX + 1;
+	} else {
+		x.height = rheightX + 1;
+	}
+	return x;
+}
+
+Node llinkrotation(Node x) {
+		Node y = x.llink;
+		Node t = y.rlink;
+
+		y.rlink = x;
+		x.llink = t;
+
+
+
+		int lheightX = (x.llink != null) ? x.llink.height : 0;
+		int rheightX = (x.rlink != null) ? x.rlink.height : 0;
+
+		if(lheightX > rheightX) {
+		x.height = lheightX + 1;
+	} else {
+		x.height = rheightX + 1;
+	}
+	int lheightY = (y.llink != null) ? y.llink.height : 0;
+	int rheightY = (y.rlink != null) ? y.rlink.heigit : 0;
+
+	if(lheightY > rheightY) {
+		y.height = lheightY + 1;
+	} else {
+		y.height = rheightY + 1;
+	}
+	return y;
+}
+
+Node insert(Node node, int data) {
+		if(node == null) {
+			return new Node(data);
+		}
+		if(data < node.data) {
+			node.llink = insert(node.llink, data);
+		} else if(data > node.data) {
+			node.rlink = insert(node.rlink, data);
+		} else {
+			return node;
+		}
+		int LlinkHeight = height(node.llink);
+		int RlinkHeight = height(node.rlink);
+
+		if(LlinkHeight > RlinkHeight) {
+			node.height = LlinkHeight + 1;
+		} else {
+			node.height = RlinkHeight + 1;
+		}
+
+		int balance = balanceFactor(node);
+
+		//LL
+		if(balance > 1 && data < node.llink.data) {
+			return rlinkrotation(node);
+		}
+
+		//RR
+		if(balance < -1 && data > node.rlink.data) {
+			return llinkrotation(node);
+		}
+
+		//LR
+		if(balance > 1 && data > node.llink.data) {
+			node.llink = llinkrotation(node.rlink);
+			return rlinkrotation(node.llink);
+		}
+
+		//RL
+		if(balance < -1 && data < node.rlink.data) {
+			node.rlink  = rlinkrotation(node.llink);
+			return llinkrotation(node.rlink);
+		}
+		return node;
+	}
+	
+    Node delete(Node node , int target){
+	    if(target < node.data){
+	        node.llink = delete(node.llink , target);
+	    }else if(target > node.data){
+	        node.rlink = delete(node.rlink , target);
+	    }else{
+	        if(node.llink == null && node.rlink  == null){
+	            Node temp;
+	            if(node.llink != null){
+	                temp = node.llink;
+	            }else{
+	            Node temp = minvalue(node.llink);
+	            node.data = temp.data
+	            node.rlink = delete(node.rlink , temp.data)
+	        }
+	    }
+	    if(node == null){
+	        return node;
+	    }
+	    LlinkHeight = height(node.llink);
+	    RlinkHeight = height(node.rlink);
+	    
+	    if(LlinkHeight > RlinkHeight) {
+			node.height = LlinkHeight + 1;
+		} else {
+			node.height = RlinkHeight + 1;
+		}
+		int balance = balanceFactor(node);
+		
+		//LL
+		if(balance > 1 && data < node.llink.data) {
+			return rlinkrotation(node)
+		}
+
+		//RR
+		if(balance < -1 && data > node.rlink.data) {
+			return llinkrotation(node);
+		}
+
+		//LR
+		if(balance > 1 && data > node.llink.data) {
+			node.llink = llinkrotation(node.rlink);
+			return rlinkrotation(node.llink);
+		}
+
+		//RL
+		if(balance < -1 && data < node.rlink.data) {
+			node.rlink  = rlinkrotation(node.llink);
+			return llinkrotation(node.rlink);
+		}
+		return node;
+	}
+
+}
+
+class Node {
+	int data;
+	int height;
+	Node llink;
+	Node rlink;
+	Node(int data) {
+		this.data = data;
+		this.height = 1;
+		llink = null;
+		rlink = null;
+	}
+}
